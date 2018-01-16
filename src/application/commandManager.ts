@@ -1,9 +1,9 @@
 // tslint:disable:no-any
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { commands, Disposable, TextEditor, TextEditorEdit } from 'vscode';
 import { ICommandManager } from './types/commandManager';
 
-@injectable()
+@Injectable()
 export class CommandManager implements ICommandManager {
     public registerCommand(command: string, callback: (...args: any[]) => any, thisArg?: any): Disposable {
         return commands.registerCommand(command, callback, thisArg);

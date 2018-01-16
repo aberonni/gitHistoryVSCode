@@ -1,9 +1,9 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { Ref, RefType } from '../../../../types';
 import { getRemoteHeadName, isRemoteHead } from './../helpers';
 import { IRefParser } from './../types';
 
-@injectable()
+@Injectable()
 export class RemoteHeadParser implements IRefParser {
     public canParse(refContent: string): boolean {
         return typeof refContent === 'string' && isRemoteHead(refContent);

@@ -1,9 +1,9 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { Ref, RefType } from '../../../../types';
 import { TAG_REF_PREFIXES } from './../constants';
 import { IRefParser } from './../types';
 
-@injectable()
+@Injectable()
 export class TagRefParser implements IRefParser {
     public canParse(refContent: string): boolean {
         return typeof refContent === 'string' && TAG_REF_PREFIXES.filter(prefix => refContent.startsWith(prefix)).length > 0;

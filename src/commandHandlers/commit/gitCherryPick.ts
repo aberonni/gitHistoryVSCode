@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { IApplicationShell } from '../../application/types';
 import { CommitDetails } from '../../common/types';
 import { IServiceContainer } from '../../ioc/types';
@@ -7,11 +7,11 @@ import { ICommitViewerFactory } from '../../viewers/types';
 import { command } from '../registration';
 import { IGitCherryPickCommandHandler } from '../types';
 
-@injectable()
+@Injectable()
 export class GitCherryPickCommandHandler implements IGitCherryPickCommandHandler {
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory,
-        @inject(IApplicationShell) private applicationShell: IApplicationShell) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory,
+        @Inject(IApplicationShell) private applicationShell: IApplicationShell) { }
 
     @command('git.commit.cherryPick', IGitCherryPickCommandHandler)
     public async cherryPickCommit(commit: CommitDetails) {

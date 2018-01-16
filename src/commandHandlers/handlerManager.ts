@@ -1,15 +1,15 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { ICommandManager } from '../application/types/commandManager';
 import { IDisposableRegistry } from '../application/types/disposableRegistry';
 import { IServiceContainer } from '../ioc/types';
 import { CommandHandlerRegister } from './registration';
 import { ICommandHandler, ICommandHandlerManager } from './types';
 
-@injectable()
+@Injectable()
 export class CommandHandlerManager implements ICommandHandlerManager {
-    constructor( @inject(IDisposableRegistry) private disposableRegistry: IDisposableRegistry,
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer) { }
+    constructor( @Inject(IDisposableRegistry) private disposableRegistry: IDisposableRegistry,
+        @Inject(ICommandManager) private commandManager: ICommandManager,
+        @Inject(IServiceContainer) private serviceContainer: IServiceContainer) { }
 
     public registerHandlers() {
         for (const item of CommandHandlerRegister.getHandlers()) {

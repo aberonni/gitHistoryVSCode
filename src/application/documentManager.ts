@@ -1,9 +1,9 @@
 // tslint:disable:unified-signatures no-any
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { TextDocument, TextDocumentShowOptions, TextEditor, Uri, ViewColumn, window, workspace } from 'vscode';
 import { IDocumentManager } from './types/documentManager';
 
-@injectable()
+@Injectable()
 export class DocumentManager implements IDocumentManager {
     public openTextDocument(uri: Uri): Thenable<TextDocument>;
     public openTextDocument(fileName: string): Thenable<TextDocument>;

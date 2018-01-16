@@ -3,15 +3,15 @@
 
 'use strict';
 
+import { Inject, Injectable } from 'container-ioc';
 import * as fs from 'fs';
 import * as fse from 'fs-extra';
-import { inject, injectable } from 'inversify';
 import * as path from 'path';
 import { IFileSystem, IPlatformService } from './types';
 
-@injectable()
+@Injectable()
 export class FileSystem implements IFileSystem {
-    constructor( @inject(IPlatformService) private platformService: IPlatformService) { }
+    constructor( @Inject(IPlatformService) private platformService: IPlatformService) { }
 
     public get directorySeparatorChar(): string {
         return path.sep;

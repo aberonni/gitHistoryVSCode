@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as path from 'path';
 import * as tmp from 'tmp';
 import { Uri, workspace } from 'vscode';
@@ -10,14 +10,14 @@ import { IFileStatParser, ILogParser } from '../parsers/types';
 import { ITEM_ENTRY_SEPARATOR, LOG_ENTRY_SEPARATOR, LOG_FORMAT_ARGS } from './constants';
 import { IGitArgsService } from './types';
 
-@injectable()
+@Injectable()
 export class Git implements IGitService {
     private gitRootPath: string;
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
         private workspaceRoot: string,
-        @inject(IGitCommandExecutor) private gitCmdExecutor: IGitCommandExecutor,
-        @inject(ILogParser) private logParser: ILogParser,
-        @inject(IGitArgsService) private gitArgsService: IGitArgsService) {
+        @Inject(IGitCommandExecutor) private gitCmdExecutor: IGitCommandExecutor,
+        @Inject(ILogParser) private logParser: ILogParser,
+        @Inject(IGitArgsService) private gitArgsService: IGitArgsService) {
     }
 
     @cache('IGitService')
@@ -36,7 +36,7 @@ export class Git implements IGitService {
         return path.relative(gitRoot, file.fsPath).replace(/\\/g, '/');
     }
     // @cache('IGitService')
-    public async getHeadHashes(): Promise<{ ref: string, hash: string }[]> {
+    public async getHeadHashes(): Promise<{ ref: string; hash: string }[]> {
         const fullHashArgs = ['show-ref'];
         const fullHashRefsOutput = await this.exec(...fullHashArgs);
         return fullHashRefsOutput.split(/\r?\n/g)
@@ -237,7 +237,7 @@ export class Git implements IGitService {
         const gitRootPath = await this.getGitRoot();
         const filePath = typeof file === 'string' ? file : file.fsPath.toString();
         const relativeFilePath = path.relative(gitRootPath, filePath);
-        return await this.execInShell('show', `${hash}:${relativeFilePath}`);
+        return this.execInShell('show', `${hash}:${relativeFilePath}`);
     }
     @cache('IGitService')
     public async getDifferences(hash1: string, hash2: string): Promise<CommittedFile[]> {
@@ -279,11 +279,11 @@ export class Git implements IGitService {
     }
     private async exec(...args: string[]): Promise<string> {
         const gitRootPath = await this.getGitRoot();
-        return await this.gitCmdExecutor.exec(gitRootPath, ...args);
+        return this.gitCmdExecutor.exec(gitRootPath, ...args);
     }
     private async execInShell(...args: string[]): Promise<string> {
         const gitRootPath = await this.getGitRoot();
-        return await this.gitCmdExecutor.exec({ cwd: gitRootPath, shell: true }, ...args);
+        return this.gitCmdExecutor.exec({ cwd: gitRootPath, shell: true }, ...args);
     }
     // how to check if a commit has been merged into any other branch
     //  $ git branch --all --contains 019daf673583208aaaf8c3f18f8e12696033e3fc

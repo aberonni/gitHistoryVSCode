@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 'use strict';
 
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { arch } from 'os';
 import { IPlatformService } from './types';
 
-@injectable()
+@Injectable()
 export class PlatformService implements IPlatformService {
     private _isWindows: boolean;
     private _isMac: boolean;

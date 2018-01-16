@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { IGitBranchFromCommitCommandHandler, IGitCherryPickCommandHandler, IGitCommitViewDetailsCommandHandler, IGitCompareCommandHandler } from '../commandHandlers/types';
 import { CherryPickCommand } from '../commands/commit/cherryPick';
 import { CompareCommand } from '../commands/commit/compare';
@@ -8,12 +8,12 @@ import { ViewDetailsCommand } from '../commands/commit/viewDetails';
 import { CommitDetails, ICommand } from '../common/types';
 import { ICommitCommandFactory } from './types';
 
-@injectable()
+@Injectable()
 export class CommitCommandFactory implements ICommitCommandFactory {
-    constructor( @inject(IGitBranchFromCommitCommandHandler) private branchCreationCommandHandler: IGitBranchFromCommitCommandHandler,
-        @inject(IGitCherryPickCommandHandler) private cherryPickHandler: IGitCherryPickCommandHandler,
-        @inject(IGitCompareCommandHandler) private compareHandler: IGitCompareCommandHandler,
-        @inject(IGitCommitViewDetailsCommandHandler) private viewChangeLogHandler: IGitCommitViewDetailsCommandHandler) { }
+    constructor( @Inject(IGitBranchFromCommitCommandHandler) private branchCreationCommandHandler: IGitBranchFromCommitCommandHandler,
+        @Inject(IGitCherryPickCommandHandler) private cherryPickHandler: IGitCherryPickCommandHandler,
+        @Inject(IGitCompareCommandHandler) private compareHandler: IGitCompareCommandHandler,
+        @Inject(IGitCommitViewDetailsCommandHandler) private viewChangeLogHandler: IGitCommitViewDetailsCommandHandler) { }
     public async createCommands(commit: CommitDetails): Promise<ICommand<CommitDetails>[]> {
         const commands: ICommand<CommitDetails>[] = [
             new CreateBranchCommand(commit, this.branchCreationCommandHandler),

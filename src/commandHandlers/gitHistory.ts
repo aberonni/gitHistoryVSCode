@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as md5 from 'md5';
 import * as osLocale from 'os-locale';
 import * as path from 'path';
@@ -15,7 +15,7 @@ import { BranchSelection, IGitServiceFactory } from '../types';
 import { command } from './registration';
 import { IGitHistoryCommandHandler } from './types';
 
-@injectable()
+@Injectable()
 export class GitHistoryCommandHandler implements IGitHistoryCommandHandler {
     private _server: IServerHost;
     private get server(): IServerHost {
@@ -25,9 +25,9 @@ export class GitHistoryCommandHandler implements IGitHistoryCommandHandler {
         }
         return this._server;
     }
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IDisposableRegistry) private disposableRegistry: IDisposableRegistry,
-        @inject(ICommandManager) private commandManager: ICommandManager) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(IDisposableRegistry) private disposableRegistry: IDisposableRegistry,
+        @Inject(ICommandManager) private commandManager: ICommandManager) { }
 
     @command('git.viewFileHistory', IGitHistoryCommandHandler)
     public async viewFileHistory(info?: FileCommitDetails | Uri): Promise<void> {

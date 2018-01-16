@@ -1,16 +1,16 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as path from 'path';
 import { Uri } from 'vscode';
 import { IServiceContainer } from '../../../ioc/types';
 import { CommittedFile, Status } from '../../../types';
 import { IFileStatParser, IFileStatStatusParser } from '../types';
 
-@injectable()
+@Injectable()
 export class FileStatParser implements IFileStatParser {
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer) {
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer) {
     }
 
-    private static parseFileMovement(fileInfo: string): { original: string, current: string } | undefined {
+    private static parseFileMovement(fileInfo: string): { original: string; current: string } | undefined {
         // src/client/{common/comms => }/Socket Stream.ts
         // src/client/common/{space in folder => comms}/id Dispenser.ts
         // src/client/common/space in folder/{idDispenser.ts => id Dispenser.ts}
@@ -40,7 +40,7 @@ export class FileStatParser implements IFileStatParser {
             // Change in file name within root directory (that's why we don't have paths)
             const parts = fileInfo.split(diffSeparator);
             return { original: parts[0], current: parts[1] };
-        }        else {
+        } else {
             const partWithDifference = fileInfo.substring(startIndex, endIndex + 1);
             if (!partWithDifference.startsWith('{') || !partWithDifference.endsWith('}')) {
                 console.error(`Invalid entry cotaining => for ${fileInfo}`);
@@ -73,7 +73,7 @@ export class FileStatParser implements IFileStatParser {
      * @returns {({ original?: string, current: string } | undefined)}
      * @memberof FileStatParser
      */
-    private static getNewAndOldFileNameFromNumStatLine(line: string, status: Status): { original?: string, current: string } | undefined {
+    private static getNewAndOldFileNameFromNumStatLine(line: string, status: Status): { original?: string; current: string } | undefined {
         const indexOfFirstAlphabet = line.split('').findIndex((char, index) => index > 0 && (char.toUpperCase() !== char.toLocaleLowerCase()));
         const fileName = line.substring(indexOfFirstAlphabet - 1).trim();
         if (status === Status.Renamed || status === Status.Copied) {
@@ -90,7 +90,7 @@ export class FileStatParser implements IFileStatParser {
      * @returns {({ additions?: number, deletions?: number } | undefined)}
      * @memberof FileStatParser
      */
-    private static getAdditionsAndDeletionsFromNumStatLine(line: string): { additions?: number, deletions?: number } | undefined {
+    private static getAdditionsAndDeletionsFromNumStatLine(line: string): { additions?: number; deletions?: number } | undefined {
         // 0       0       src/client/common/{comms => }/socketCallbackHandler.ts
         const numStatParts = line.split(/\s/g).map(part => part.trim()).filter(part => part.length > 0);
         if (numStatParts.length < 3) {

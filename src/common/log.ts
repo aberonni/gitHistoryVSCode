@@ -1,8 +1,8 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { Disposable, workspace } from 'vscode';
 import { ILogService } from './types';
 
-@injectable()
+@Injectable()
 export class Logger implements ILogService {
     private _enabled: boolean;
     private disposable: Disposable;

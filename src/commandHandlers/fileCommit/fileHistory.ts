@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as path from 'path';
 import { Uri } from 'vscode';
 import { IApplicationShell, IDocumentManager } from '../../application/types';
@@ -12,13 +12,13 @@ import { Hash, IGitService, IGitServiceFactory, Status } from '../../types';
 import { command } from '../registration';
 import { IGitFileHistoryCommandHandler } from '../types';
 
-@injectable()
+@Injectable()
 export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandler {
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IApplicationShell) private applicationShell: IApplicationShell,
-        @inject(IFileSystem) private fileSystem: IFileSystem,
-        @inject(IDocumentManager) private documentManager: IDocumentManager) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(ICommandManager) private commandManager: ICommandManager,
+        @Inject(IApplicationShell) private applicationShell: IApplicationShell,
+        @Inject(IFileSystem) private fileSystem: IFileSystem,
+        @Inject(IDocumentManager) private documentManager: IDocumentManager) { }
 
     @command('git.commit.file.select', IGitFileHistoryCommandHandler)
     public async doSomethingWithFile(fileCommit: FileCommitDetails) {
@@ -34,7 +34,7 @@ export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandl
         const fileCommit = nodeOrFileCommit instanceof FileCommitDetails ? nodeOrFileCommit : nodeOrFileCommit.data!;
         const gitService = this.serviceContainer.get<IGitServiceFactory>(IGitServiceFactory).createGitService(fileCommit.workspaceFolder);
         if (fileCommit.committedFile.status === Status.Deleted) {
-            return await this.applicationShell.showErrorMessage('File cannot be viewed as it was deleted').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be viewed as it was deleted').then(() => void 0);
         }
         const uri = await this.getFileUri(gitService, fileCommit);
         const doc = await this.documentManager.openTextDocument(uri);
@@ -46,10 +46,10 @@ export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandl
         const fileCommit = nodeOrFileCommit instanceof FileCommitDetails ? nodeOrFileCommit : nodeOrFileCommit.data!;
         const gitService = this.serviceContainer.get<IGitServiceFactory>(IGitServiceFactory).createGitService(fileCommit.workspaceFolder);
         if (fileCommit.committedFile.status === Status.Deleted) {
-            return await this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
         }
         if (!await this.fileSystem.fileExistsAsync(fileCommit.committedFile.uri.fsPath)) {
-            return await this.applicationShell.showErrorMessage('Corresponding workspace file does not exist').then(() => void 0);
+            return this.applicationShell.showErrorMessage('Corresponding workspace file does not exist').then(() => void 0);
         }
 
         const tmpFile = await gitService.getCommitFile(fileCommit.logEntry.hash.full, fileCommit.committedFile.uri);
@@ -64,10 +64,10 @@ export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandl
         const gitService = this.serviceContainer.get<IGitServiceFactory>(IGitServiceFactory).createGitService(fileCommit.workspaceFolder);
 
         if (fileCommit.committedFile.status === Status.Deleted) {
-            return await this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
         }
         if (fileCommit.committedFile.status === Status.Added) {
-            return await this.applicationShell.showErrorMessage('File cannot be compared with previous, as this is a new file').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be compared with previous, as this is a new file').then(() => void 0);
         }
 
         const tmpFilePromise = gitService.getCommitFile(fileCommit.logEntry.hash.full, fileCommit.committedFile!.uri);
@@ -88,10 +88,10 @@ export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandl
         const gitService = this.serviceContainer.get<IGitServiceFactory>(IGitServiceFactory).createGitService(fileCommit.workspaceFolder);
 
         if (fileCommit.committedFile.status === Status.Deleted) {
-            return await this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be compared with, as it was deleted').then(() => void 0);
         }
         if (fileCommit.committedFile.status === Status.Added) {
-            return await this.applicationShell.showErrorMessage('File cannot be compared, as this is a new file').then(() => void 0);
+            return this.applicationShell.showErrorMessage('File cannot be compared, as this is a new file').then(() => void 0);
         }
 
         const leftFilePromise = gitService.getCommitFile(fileCommit.logEntry.hash.full, fileCommit.committedFile!.uri);
@@ -104,7 +104,7 @@ export class GitFileHistoryCommandHandler implements IGitFileHistoryCommandHandl
 
         this.commandManager.executeCommand('vscode.diff', leftFile, rightFile, title, { preview: true });
     }
-    private getComparisonTitle(left: { file: Uri, hash: Hash }, right: { file: Uri, hash: Hash }) {
+    private getComparisonTitle(left: { file: Uri; hash: Hash }, right: { file: Uri; hash: Hash }) {
         const leftFileName = path.basename(left.file.fsPath);
         const rightFileName = path.basename(right.file.fsPath);
         if (leftFileName === rightFileName) {

@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as path from 'path';
 import { Disposable, EventEmitter, TreeDataProvider, TreeItemCollapsibleState, window } from 'vscode';
 import { Event, OutputChannel, TreeItem } from 'vscode';
@@ -10,7 +10,7 @@ import { DirectoryNode, FileNode, INodeBuilder } from '../nodes/types';
 import { IOutputChannel } from '../types';
 import { ICommitViewer } from './types';
 
-@injectable()
+@Injectable()
 export class CommitViewer implements ICommitViewer, TreeDataProvider<DirectoryNode | FileNode> {
     private registered: boolean;
     private commit: CommitDetails;
@@ -23,9 +23,9 @@ export class CommitViewer implements ICommitViewer, TreeDataProvider<DirectoryNo
     public get selectedCommit(): Readonly<CommitDetails> {
         return this.commit;
     }
-    constructor(@inject(IOutputChannel) private outputChannel: OutputChannel,
-        @inject(ICommitViewFormatter) private commitFormatter: ICommitViewFormatter,
-        @inject(ICommandManager) private commandManager: ICommandManager,
+    constructor(@Inject(IOutputChannel) private outputChannel: OutputChannel,
+        @Inject(ICommitViewFormatter) private commitFormatter: ICommitViewFormatter,
+        @Inject(ICommandManager) private commandManager: ICommandManager,
         private nodeBuilder: INodeBuilder,
         private treeId: string, private visibilityContextVariable: string) {
     }

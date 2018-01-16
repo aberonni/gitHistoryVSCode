@@ -1,14 +1,14 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { CommitDetails, IUiService } from '../../common/types';
 import { IServiceContainer } from '../../ioc/types';
 import { ICommitViewerFactory } from '../../viewers/types';
 import { command } from '../registration';
 import { IGitCommitCommandHandler } from '../types';
 
-@injectable()
+@Injectable()
 export class GitCommitCommandHandler implements IGitCommitCommandHandler {
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory) { }
 
     @command('git.commit.doSomething', IGitCommitCommandHandler)
     public async doSomethingWithCommit(commit: CommitDetails) {

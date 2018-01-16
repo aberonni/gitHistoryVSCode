@@ -1,8 +1,8 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { ActionedDetails } from '../../../types';
 import { IActionDetailsParser } from '../types';
 
-@injectable()
+@Injectable()
 export class ActionDetailsParser implements IActionDetailsParser {
     public parse(name: string, email: string, unixTime: string): ActionedDetails | undefined {
         name = (name || '').trim();

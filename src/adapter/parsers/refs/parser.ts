@@ -1,16 +1,14 @@
+import { IRefParserService } from './parser';
 export * from './types';
-import { injectable, multiInject } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { ILogService } from '../../../common/types';
 import { Ref } from '../../../types';
-// import { TYPES } from '../constants';
-// import * as TYPES from '../types';
 import { IRefsParser } from '../types';
-import { IRefParser } from './types';
 
-@injectable()
+@Injectable()
 export class RefsParser implements IRefsParser {
-    constructor( @multiInject(IRefParser) private parsers: IRefParser[],
-        @multiInject(ILogService) private loggers: ILogService[]) {
+    constructor( @Inject(IRefParserService) private parsers: IRefParserService,
+        @Inject(ILogService) private logger: ILogService) {
     }
 
     /**
@@ -18,18 +16,16 @@ export class RefsParser implements IRefsParser {
      * git branch --all (only considers)
      * git show-refs
      * git log --format=%D
-     * @param {string} refContent
-     * @returns {Ref[]}
-     * @memberof RefParser
      */
     public parse(refContent: string): Ref[] {
+        const parsers = this.parsers.getRefParsers();
         return (refContent || '').split(',')
             .map(ref => ref.trim())
             .filter(line => line.length > 0)
             .map(ref => {
-                const parser = this.parsers.find(item => item.canParse(ref));
+                const parser = parsers.find(item => item.canParse(ref));
                 if (!parser) {
-                    this.loggers.forEach(logger => logger.error(`No parser found for ref '${ref}'`));
+                    this.logger.error(`No parser found for ref '${ref}'`);
                     return;
                 }
                 return parser.parse(ref);

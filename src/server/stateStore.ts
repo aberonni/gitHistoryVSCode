@@ -1,9 +1,9 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { Uri } from 'vscode';
 import { BranchSelection, LogEntries, LogEntry } from '../types';
 import { IWorkspaceQueryStateStore, State } from './types';
 
-@injectable()
+@Injectable()
 export class StateStore implements IWorkspaceQueryStateStore {
     private storesPerWorkspace = new Map<string, State>();
     public async initialize(id: string, workspaceFolder: string, branch: string, branchSelection: BranchSelection, searchText?: string, file?: Uri): Promise<void> {

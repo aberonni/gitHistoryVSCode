@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { ICommandManager } from '../application/types/commandManager';
 import { IGitCompareFileCommandHandler, IGitFileHistoryCommandHandler } from '../commandHandlers/types';
 import { CompareFileCommand } from '../commands/fileCommit/compareFile';
@@ -12,12 +12,12 @@ import { CompareFileCommitDetails, FileCommitDetails, ICommand } from '../common
 import { IServiceContainer } from '../ioc/types';
 import { IFileCommitCommandFactory } from './types';
 
-@injectable()
+@Injectable()
 export class FileCommitCommandFactory implements IFileCommitCommandFactory {
-    constructor( @inject(IGitFileHistoryCommandHandler) private fileHistoryCommandHandler: IGitFileHistoryCommandHandler,
-        @inject(IGitCompareFileCommandHandler) private fileCompareHandler: IGitCompareFileCommandHandler,
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer) { }
+    constructor( @Inject(IGitFileHistoryCommandHandler) private fileHistoryCommandHandler: IGitFileHistoryCommandHandler,
+        @Inject(IGitCompareFileCommandHandler) private fileCompareHandler: IGitCompareFileCommandHandler,
+        @Inject(ICommandManager) private commandManager: ICommandManager,
+        @Inject(IServiceContainer) private serviceContainer: IServiceContainer) { }
 
     public async createCommands(fileCommit: FileCommitDetails): Promise<ICommand<FileCommitDetails>[]> {
         const commands = [

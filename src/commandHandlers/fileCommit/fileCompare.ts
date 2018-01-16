@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { IApplicationShell, ICommandManager } from '../../application/types';
 import { FileCommitDetails } from '../../common/types';
 import { IServiceContainer } from '../../ioc/types';
@@ -7,13 +7,13 @@ import { IGitServiceFactory } from '../../types';
 import { command } from '../registration';
 import { IGitCompareFileCommandHandler } from '../types';
 
-@injectable()
+@Injectable()
 export class GitCompareFileCommitCommandHandler implements IGitCompareFileCommandHandler {
     private _previouslySelectedCommit?: FileCommitDetails;
 
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(IApplicationShell) private application: IApplicationShell) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(ICommandManager) private commandManager: ICommandManager,
+        @Inject(IApplicationShell) private application: IApplicationShell) { }
 
     public get selectedCommit(): FileCommitDetails | undefined {
         return this._previouslySelectedCommit;

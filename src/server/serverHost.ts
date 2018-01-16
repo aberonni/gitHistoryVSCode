@@ -1,10 +1,10 @@
 import * as bodyParser from 'body-parser';
+import { Inject } from 'container-ioc';
 import * as cors from 'cors';
 import { EventEmitter } from 'events';
-import { Express, Request, Response } from 'express';
 import * as express from 'express';
+import { Express, Request, Response } from 'express';
 import * as http from 'http';
-import { inject } from 'inversify';
 import * as path from 'path';
 import { ICommandManager } from '../application/types/commandManager';
 import { IServiceContainer } from '../ioc/types';
@@ -18,10 +18,10 @@ export class ServerHost extends EventEmitter implements IServerHost {
     private apiController: ApiController;
     private port?: number;
     private startPromise: Promise<StartupInfo>;
-    constructor(@inject(IThemeService) private themeService: IThemeService,
-        @inject(IGitServiceFactory) private gitServiceFactory: IGitServiceFactory,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IWorkspaceQueryStateStore) private stateStore: IWorkspaceQueryStateStore) {
+    constructor(@Inject(IThemeService) private themeService: IThemeService,
+        @Inject(IGitServiceFactory) private gitServiceFactory: IGitServiceFactory,
+        @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(IWorkspaceQueryStateStore) private stateStore: IWorkspaceQueryStateStore) {
         super();
     }
 

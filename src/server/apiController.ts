@@ -1,5 +1,5 @@
+import { Injectable } from 'container-ioc';
 import { Express, Request, Response } from 'express';
-import { injectable } from 'inversify';
 import { Uri } from 'vscode';
 import { IFileStatParser } from '../adapter/parsers/types';
 import { ICommandManager } from '../application/types/commandManager';
@@ -11,7 +11,7 @@ import { IApiRouteHandler, IWorkspaceQueryStateStore } from './types';
 
 // tslint:disable-next-line:no-require-imports no-var-requires
 
-@injectable()
+@Injectable()
 export class ApiController implements IApiRouteHandler {
     private readonly commitViewer: IGitCommitViewDetailsCommandHandler;
     constructor(private app: Express,

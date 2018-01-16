@@ -16,15 +16,13 @@ export type ClassType<T> = {
 export const IServiceManager = Symbol('IServiceManager');
 
 export interface IServiceManager {
-    add<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: ClassType<T>, name?: string | number | symbol): void;
-    addSingleton<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: ClassType<T>, name?: string | number | symbol): void;
-    addSingletonInstance<T>(serviceIdentifier: ServiceIdentifier<T>, instance: T, name?: string | number | symbol): void;
-    get<T>(serviceIdentifier: ServiceIdentifier<T>, name?: string | number | symbol): T;
-    getAll<T>(serviceIdentifier: ServiceIdentifier<T>, name?: string | number | symbol): T[];
+    add<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: ClassType<T>): void;
+    addSingleton<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: ClassType<T>): void;
+    addSingletonInstance<T>(serviceIdentifier: ServiceIdentifier<T>, instance: T): void;
+    get<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>): T;
 }
 
 export const IServiceContainer = Symbol('IServiceContainer');
 export interface IServiceContainer {
-    get<T>(serviceIdentifier: ServiceIdentifier<T>, name?: string | number | symbol): T;
-    getAll<T>(serviceIdentifier: ServiceIdentifier<T>, name?: string | number | symbol): T[];
+    get<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>): T;
 }

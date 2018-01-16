@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { CancellationTokenSource, QuickPickItem, workspace, WorkspaceFolder } from 'vscode';
 import { IApplicationShell } from '../application/types';
 import { ICommitCommandFactory, IFileCommitCommandFactory } from '../commandFactories/types';
@@ -8,11 +8,11 @@ import { CommitDetails, FileCommitDetails, ICommand, IUiService } from './types'
 const allBranches = '$(git-branch) All branches';
 const currentBranch = '$(git-branch) Current branch';
 
-@injectable()
+@Injectable()
 export class UiService implements IUiService {
     private selectionActionToken?: CancellationTokenSource;
-    constructor( @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IApplicationShell) private application: IApplicationShell) { }
+    constructor( @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(IApplicationShell) private application: IApplicationShell) { }
 
     public async getBranchSelection(): Promise<BranchSelection | undefined> {
         const itemPickList: QuickPickItem[] = [];

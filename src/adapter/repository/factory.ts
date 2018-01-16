@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as md5 from 'md5';
 import { IServiceContainer } from '../../ioc/types';
 import { IGitService, IGitServiceFactory } from '../../types';
@@ -7,13 +7,13 @@ import { ILogParser } from '../parsers/types';
 import { Git } from './git';
 import { IGitArgsService } from './types';
 
-@injectable()
+@Injectable()
 export class GitServiceFactory implements IGitServiceFactory {
     private readonly gitServices = new Map<string, IGitService>();
-    constructor( @inject(IGitCommandExecutor) private gitCmdExecutor: IGitCommandExecutor,
-        @inject(ILogParser) private logParser: ILogParser,
-        @inject(IGitArgsService) private gitArgsService: IGitArgsService,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer) {
+    constructor( @Inject(IGitCommandExecutor) private gitCmdExecutor: IGitCommandExecutor,
+        @Inject(ILogParser) private logParser: ILogParser,
+        @Inject(IGitArgsService) private gitArgsService: IGitArgsService,
+        @Inject(IServiceContainer) private serviceContainer: IServiceContainer) {
 
     }
     public createGitService(workspaceRoot: string): IGitService {

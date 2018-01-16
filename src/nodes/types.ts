@@ -59,6 +59,13 @@ export interface INodeFactory {
     createFileNode(commit: CommitDetails, committedFile: CommittedFile): FileNode;
 }
 
+export const INodeFactoryService = Symbol('INodeFactoryService');
+
+export interface INodeFactoryService {
+    standard: INodeFactory;
+    comparison: INodeFactory;
+}
+
 export const INodeBuilder = Symbol('INodeBuilder');
 
 export interface INodeBuilder {

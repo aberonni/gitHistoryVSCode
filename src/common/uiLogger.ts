@@ -1,9 +1,9 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { OutputChannel, workspace } from 'vscode';
 import { getLogChannel } from '../logger';
 import { ILogService } from './types';
 
-@injectable()
+@Injectable()
 export class OutputPanelLogger implements ILogService {
     private readonly outputChannel: OutputChannel;
     private readonly traceEnabled: boolean;

@@ -1,34 +1,19 @@
-import { Container } from 'inversify';
-import { Abstract, IServiceManager, Newable } from './types';
+import { Container, LifeTime } from 'container-ioc';
+import { IServiceManager, ServiceIdentifier } from './types';
 export class ServiceManager implements IServiceManager {
     constructor(private container: Container) { }
     // tslint:disable-next-line:no-any
-    public add<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>, constructor: new (...args: any[]) => T, name?: string | number | symbol | undefined): void {
-        if (name) {
-            this.container.bind<T>(serviceIdentifier).to(constructor).inSingletonScope().whenTargetNamed(name);
-        } else {
-            this.container.bind<T>(serviceIdentifier).to(constructor).inSingletonScope();
-        }
+    public add<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: new (...args: any[]) => T): void {
+        this.container.register({ token: serviceIdentifier, useClass: constructor, lifeTime: LifeTime.PerRequest });
     }
     // tslint:disable-next-line:no-any
-    public addSingleton<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>, constructor: new (...args: any[]) => T, name?: string | number | symbol | undefined): void {
-        if (name) {
-            this.container.bind<T>(serviceIdentifier).to(constructor).inSingletonScope().whenTargetNamed(name);
-        } else {
-            this.container.bind<T>(serviceIdentifier).to(constructor).inSingletonScope();
-        }
+    public addSingleton<T>(serviceIdentifier: ServiceIdentifier<T>, constructor: new (...args: any[]) => T): void {
+        this.container.register({ token: serviceIdentifier, useClass: constructor, lifeTime: LifeTime.Persistent });
     }
-    public addSingletonInstance<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>, instance: T, name?: string | number | symbol | undefined): void {
-        if (name) {
-            this.container.bind<T>(serviceIdentifier).toConstantValue(instance).whenTargetNamed(name);
-        } else {
-            this.container.bind<T>(serviceIdentifier).toConstantValue(instance);
-        }
+    public addSingletonInstance<T>(serviceIdentifier: ServiceIdentifier<T>, instance: T): void {
+        this.container.register({ token: serviceIdentifier, useValue: instance, lifeTime: LifeTime.Persistent });
     }
-    public get<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>, name?: string | number | symbol | undefined): T {
-        return name ? this.container.getNamed<T>(serviceIdentifier, name) : this.container.get<T>(serviceIdentifier);
-    }
-    public getAll<T>(serviceIdentifier: string | symbol | Newable<T> | Abstract<T>, name?: string | number | symbol | undefined): T[] {
-        return name ? this.container.getAllNamed<T>(serviceIdentifier, name) : this.container.getAll<T>(serviceIdentifier);
+    public get<T>(serviceIdentifier: ServiceIdentifier<T>): T {
+        return this.container.resolve(serviceIdentifier);
     }
 }

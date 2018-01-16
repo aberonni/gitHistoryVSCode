@@ -1,8 +1,8 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { workspace } from 'vscode';
 import { IThemeService, ThemeDetails } from './types';
 
-@injectable()
+@Injectable()
 export class ThemeService implements IThemeService {
     public getThemeDetails(theme: string, backgroundColor: string, color: string): ThemeDetails {
         const editorConfig = workspace.getConfiguration('editor');

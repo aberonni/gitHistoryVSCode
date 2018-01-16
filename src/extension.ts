@@ -1,10 +1,4 @@
-// tslint:disable-next-line:no-any
-if ((Reflect as any).metadata === undefined) {
-    // tslint:disable-next-line:no-require-imports no-var-requires
-    require('reflect-metadata');
-}
-
-import { Container } from 'inversify';
+import { Container } from 'container-ioc';
 import * as vscode from 'vscode';
 import { OutputChannel } from 'vscode';
 import { registerTypes as registerParserTypes } from './adapter/parsers/serviceRegistry';
@@ -15,14 +9,6 @@ import { ICommandManager } from './application/types/commandManager';
 import { IDisposableRegistry } from './application/types/disposableRegistry';
 import { registerTypes as registerCommandFactoryTypes } from './commandFactories/serviceRegistry';
 import { registerTypes as registerCommandTypes } from './commandHandlers/serviceRegistry';
-// import * as fileHistory from './commands/fileHistory';
-// import * as lineHistory from './commands/lineHistory';
-// import { CommandRegister } from './commands/register';
-// import * as searchHistory from './commands/searchHistory';
-// import * as commitComparer from './commitCompare/main';
-// import * as commitViewer from './commitViewer/main';
-// import * as logViewer from './logViewer/logViewer';
-import { Logger } from './common/log';
 import { ILogService, IUiService } from './common/types';
 import { OutputPanelLogger } from './common/uiLogger';
 import { UiService } from './common/uiService';
@@ -55,16 +41,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<any> {
     serviceManager = new ServiceManager(cont);
     serviceContainer = new ServiceContainer(cont);
 
-    cont.bind<IServiceContainer>(IServiceContainer).toConstantValue(serviceContainer);
+    serviceManager.addSingletonInstance<IServiceContainer>(IServiceContainer, serviceContainer);
 
-    cont.bind<ILogService>(ILogService).to(Logger).inSingletonScope();
-    cont.bind<ILogService>(ILogService).to(OutputPanelLogger).inSingletonScope(); // .whenTargetNamed('Viewer');
-    cont.bind<IUiService>(IUiService).to(UiService).inSingletonScope();
-    cont.bind<IThemeService>(IThemeService).to(ThemeService).inSingletonScope();
-    cont.bind<ICommitViewFormatter>(ICommitViewFormatter).to(CommitViewFormatter).inSingletonScope();
-    // cont.bind<IServerHost>(IServerHost).to(ServerHost).inSingletonScope();
-    cont.bind<IWorkspaceQueryStateStore>(IWorkspaceQueryStateStore).to(StateStore).inSingletonScope();
-    cont.bind<OutputChannel>(IOutputChannel).toConstantValue(getLogChannel());
+    serviceManager.addSingleton<ILogService>(ILogService, OutputPanelLogger);
+    serviceManager.addSingleton<IUiService>(IUiService, UiService);
+    serviceManager.addSingleton<IThemeService>(IThemeService, ThemeService);
+    serviceManager.addSingleton<ICommitViewFormatter>(ICommitViewFormatter, CommitViewFormatter);
+    serviceManager.addSingleton<IWorkspaceQueryStateStore>(IWorkspaceQueryStateStore, StateStore);
+    serviceManager.addSingletonInstance<OutputChannel>(IOutputChannel, getLogChannel());
     // cont.bind<FileStatParser>(FileStatParser).to(FileStatParser);
 
     registerParserTypes(serviceManager);
@@ -90,7 +74,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<any> {
 
     disposable = vscode.workspace.registerTextDocumentContentProvider(gitHistoryFileViewerSchema, new CommitFileViewerProvider(serviceContainer));
     context.subscriptions.push(disposable);
-    context.subscriptions.push(serviceManager.get<IDisposableRegistry>(IDisposableRegistry));
+    context.subscriptions.push(serviceContainer.get<IDisposableRegistry>(IDisposableRegistry));
 
     const commandManager = serviceContainer.get<ICommandManager>(ICommandManager);
     commandManager.executeCommand('setContext', 'git.commit.view.show', true);

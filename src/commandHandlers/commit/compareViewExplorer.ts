@@ -1,13 +1,13 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { ICommandManager } from '../../application/types/commandManager';
 import { ICommitViewerFactory } from '../../viewers/types';
 import { command } from '../registration';
 import { IGitCompareCommitViewExplorerCommandHandler } from '../types';
 
-@injectable()
+@Injectable()
 export class GitCompareCommitViewExplorerCommandHandler implements IGitCompareCommitViewExplorerCommandHandler {
-    constructor( @inject(ICommandManager) private commandManager: ICommandManager,
-        @inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory) { }
+    constructor( @Inject(ICommandManager) private commandManager: ICommandManager,
+        @Inject(ICommitViewerFactory) private commitViewerFactory: ICommitViewerFactory) { }
 
     @command('git.commit.compare.view.hide', IGitCompareCommitViewExplorerCommandHandler)
     public async hide() {

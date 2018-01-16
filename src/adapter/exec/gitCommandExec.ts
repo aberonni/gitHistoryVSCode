@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
+import { Inject, Injectable } from 'container-ioc';
 import * as iconv from 'iconv-lite';
-import { inject, injectable, multiInject } from 'inversify';
 import { Disposable } from 'vscode';
 import { ILogService } from '../../common/types';
 import { IGitExecutableLocator } from '../locator';
@@ -8,14 +8,14 @@ import { IGitCommandExecutor } from './types';
 
 const DEFAULT_ENCODING = 'utf8';
 
-@injectable()
+@Injectable()
 export class GitCommandExecutor implements IGitCommandExecutor {
-    constructor( @inject(IGitExecutableLocator) private gitExecLocator: IGitExecutableLocator,
-        @multiInject(ILogService) private loggers: ILogService[]) {
+    constructor( @Inject(IGitExecutableLocator) private gitExecLocator: IGitExecutableLocator,
+        @Inject(ILogService) private logger: ILogService) {
     }
     public async exec(cwd: string, ...args: string[]): Promise<string>;
     // tslint:disable-next-line:unified-signatures
-    public async exec(options: { cwd: string, shell?: boolean, encoding?: string }, ...args: string[]): Promise<string>;
+    public async exec(options: { cwd: string; shell?: boolean; encoding?: string }, ...args: string[]): Promise<string>;
     // tslint:disable-next-line:no-any
     public async exec(options: any, ...args: string[]): Promise<string> {
         const gitPath = await this.gitExecLocator.getGitPath();
@@ -42,27 +42,21 @@ export class GitCommandExecutor implements IGitCommandExecutor {
             gitShow.once('close', () => {
                 if (errBuffers.length > 0) {
                     const stdErr = decode(errBuffers, childProcOptions.encoding);
-                    this.loggers.forEach(logger => {
-                        logger.log('git', ...args);
-                        logger.error(stdErr);
-                    });
+                    this.logger.log('git', ...args);
+                    this.logger.error(stdErr);
                     reject(stdErr);
                 } else {
                     const stdOut = decode(buffers, childProcOptions.encoding);
-                    this.loggers.forEach(logger => {
-                        logger.log('git', ...args);
-                        logger.trace(stdOut);
-                    });
+                    this.logger.log('git', ...args);
+                    this.logger.trace(stdOut);
                     resolve(stdOut);
                 }
                 disposables.forEach(disposable => disposable.dispose());
             });
             gitShow.once('error', ex => {
                 reject(ex);
-                this.loggers.forEach(logger => {
-                    logger.log('git', ...args);
-                    logger.error(ex);
-                });
+                this.logger.log('git', ...args);
+                this.logger.error(ex);
                 disposables.forEach(disposable => disposable.dispose());
             });
         });
@@ -75,14 +69,14 @@ function decode(buffers: Buffer[], encoding: string): string {
 
 // import { spawn } from 'child_process';
 // import * as iconv from 'iconv-lite';
-// import { inject, injectable, multiInject } from 'inversify';
+// import { Inject, Injectable, multiInject } from 'container-ioc';
 // import { ILogService } from '../../common/types';
 // import { IGitExecutableLocator } from '../locator';
 // import { IGitCommandExecutor } from './types';
 
-// @injectable()
+// @Injectable()
 // export class GitCommandExecutor implements IGitCommandExecutor {
-//     constructor( @inject(IGitExecutableLocator) private gitExecLocator: IGitExecutableLocator,
+//     constructor( @Inject(IGitExecutableLocator) private gitExecLocator: IGitExecutableLocator,
 //         @multiInject(ILogService) private loggers: ILogService[]) {
 //     }
 //     public async exec(cwd: string, ...args: string[]): Promise<string>;

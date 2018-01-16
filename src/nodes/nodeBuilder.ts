@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import * as path from 'path';
 import { IFileCommitCommandFactory } from '../commandFactories/types';
 import { CommitDetails } from '../common/types';
@@ -8,11 +8,11 @@ import { AddedIcon, FileIcon, FolderIcon, ModifiedIcon, RemovedIcon } from './no
 import { DirectoryTreeItem, FileTreeItem } from './treeNodes';
 import { DirectoryNode, FileNode, INodeBuilder, INodeFactory } from './types';
 
-@injectable()
+@Injectable()
 export class NodeBuilder implements INodeBuilder {
-    constructor(@inject(IFileCommitCommandFactory) private fileCommandFactory: IFileCommitCommandFactory,
+    constructor(@Inject(IFileCommitCommandFactory) private fileCommandFactory: IFileCommitCommandFactory,
         private nodeFactory: INodeFactory,
-        @inject(IPlatformService) private platform: IPlatformService) {
+        @Inject(IPlatformService) private platform: IPlatformService) {
     }
     public buildTree(commit: CommitDetails, committedFiles: CommittedFile[]): (DirectoryNode | FileNode)[] {
         const sortedFiles = committedFiles!.sort((a, b) => a.uri.fsPath.toUpperCase() > b.uri.fsPath.toUpperCase() ? 1 : -1);

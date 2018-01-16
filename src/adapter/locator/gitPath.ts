@@ -1,16 +1,16 @@
 import { exec } from 'child_process';
+import { Inject, Injectable } from 'container-ioc';
 import * as fs from 'fs';
-import { inject, injectable, multiInject } from 'inversify';
 import * as vscode from 'vscode';
 import { ILogService } from '../../common/types';
 import { IPlatformService } from '../../platform/types';
 import { IGitExecutableLocator } from './types';
 
-@injectable()
+@Injectable()
 export class GitExecutableLocator implements IGitExecutableLocator {
     private gitPath: string;
-    constructor( @multiInject(ILogService) private loggers: ILogService[],
-        @inject(IPlatformService) private platformService: IPlatformService) {
+    constructor( @Inject(ILogService) private logger: ILogService,
+        @Inject(IPlatformService) private platformService: IPlatformService) {
     }
     public async getGitPath(): Promise<string> {
         if (typeof this.gitPath === 'string') {
@@ -21,20 +21,20 @@ export class GitExecutableLocator implements IGitExecutableLocator {
         this.gitPath = <string>vscode.workspace.getConfiguration('git').get('path');
         if (typeof this.gitPath === 'string' && this.gitPath.length > 0) {
             if (fs.existsSync(this.gitPath)) {
-                this.loggers.forEach(logger => logger.trace(`git path: ${this.gitPath} - from vscode settings`));
+                this.logger.trace(`git path: ${this.gitPath} - from vscode settings`);
                 return this.gitPath;
             } else {
-                this.loggers.forEach(logger => logger.error(`git path: ${this.gitPath} - from vscode settings in invalid`));
+                this.logger.error(`git path: ${this.gitPath} - from vscode settings in invalid`);
             }
         }
 
         if (!this.platformService.isWindows) {
-            this.loggers.forEach(logger => logger.trace('git path: using PATH environment variable'));
+            this.logger.trace('git path: using PATH environment variable');
             return this.gitPath = 'git';
         }
 
-        this.gitPath = await getGitPathOnWindows(this.loggers);
-        this.loggers.forEach(logger => logger.log('git path identified as: ', this.gitPath));
+        this.gitPath = await getGitPathOnWindows(this.logger);
+        this.logger.log('git path identified as: ', this.gitPath);
         return this.gitPath;
     }
 }
@@ -89,13 +89,13 @@ async function queryChained(locations: { key: string, view: string | null }[]): 
             .catch(async () => queryChained(locations.slice(1)));
     });
 }
-async function getGitPathOnWindows(loggers: ILogService[]) {
+async function getGitPathOnWindows(logger: ILogService) {
     try {
         const gitRegPath = queryChained(GitLookupRegistryKeys); // for a 32bit git installation on 64bit Windows
-        loggers.forEach(logger => logger.trace(`git path: ${gitRegPath} - from registry`));
+        logger.trace(`git path: ${gitRegPath} - from registry`);
         return gitRegPath;
     } catch (ex) {
-        loggers.forEach(logger => logger.trace('git path: falling back to PATH environment variable'));
+        logger.trace('git path: falling back to PATH environment variable');
         return 'git';
     }
 }

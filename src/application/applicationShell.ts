@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 'use strict';
 
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import * as vscode from 'vscode';
 import { IApplicationShell } from './types';
 
-@injectable()
+@Injectable()
 export class ApplicationShell implements IApplicationShell {
     public showInformationMessage(message: string, ...items: string[]): Thenable<string>;
     public showInformationMessage(message: string, options: vscode.MessageOptions, ...items: string[]): Thenable<string>;

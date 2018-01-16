@@ -1,14 +1,14 @@
-import { inject, injectable } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { IServiceContainer } from '../../../ioc/types';
 import { CommitInfo, CommittedFile, LogEntry } from '../../../types';
 import { Helpers } from '../../helpers';
 import { IActionDetailsParser, IFileStatParser, ILogParser, IRefsParser } from '../types';
 
-@injectable()
+@Injectable()
 export class LogParser implements ILogParser {
-    constructor( @inject(IRefsParser) private refsparser: IRefsParser,
-        @inject(IServiceContainer) private serviceContainer: IServiceContainer,
-        @inject(IActionDetailsParser) private actionDetailsParser: IActionDetailsParser) {
+    constructor( @Inject(IRefsParser) private refsparser: IRefsParser,
+        @Inject(IServiceContainer) private serviceContainer: IServiceContainer,
+        @Inject(IActionDetailsParser) private actionDetailsParser: IActionDetailsParser) {
 
     }
     public parse(gitRepoPath: string, summaryEntry: string, itemEntrySeparator: string, logFormatArgs: string[], filesWithNumStat?: string, filesWithNameStatus?: string): LogEntry {

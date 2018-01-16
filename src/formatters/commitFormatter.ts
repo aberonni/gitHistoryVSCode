@@ -1,9 +1,9 @@
-import { injectable } from 'inversify';
+import { Injectable } from 'container-ioc';
 import { EOL } from 'os';
 import { LogEntry } from '../types';
 import { ICommitViewFormatter } from './types';
 
-@injectable()
+@Injectable()
 export class CommitViewFormatter implements ICommitViewFormatter {
     public format(item: LogEntry): string {
         const sb: string[] = [];

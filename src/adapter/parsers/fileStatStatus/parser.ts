@@ -1,19 +1,19 @@
-import { injectable, multiInject } from 'inversify';
+import { Inject, Injectable } from 'container-ioc';
 import { ILogService } from '../../../common/types';
 import { Status } from '../../../types';
 import { IFileStatStatusParser } from '../types';
 
-@injectable()
+@Injectable()
 export class FileStatStatusParser implements IFileStatStatusParser {
-    constructor( @multiInject(ILogService) private loggers: ILogService[]) { }
+    constructor( @Inject(ILogService) private logger: ILogService) { }
     public canParse(status: string): boolean {
         const parsedStatus = this.parse(status);
         return parsedStatus !== undefined && parsedStatus !== null;
     }
     public parse(status: string): Status | undefined {
-        status = status || '';
-        status = status.length === 0 ? '' : status.trim().substring(0, 1);
-        switch (status) {
+        let fixedStatus = status || '';
+        fixedStatus = status.length === 0 ? '' : status.trim().substring(0, 1);
+        switch (fixedStatus) {
             case 'A':
                 return Status.Added;
             case 'M':
@@ -33,7 +33,7 @@ export class FileStatStatusParser implements IFileStatStatusParser {
             case 'B':
                 return Status.Broken;
             default: {
-                this.loggers.forEach(logger => logger.error(`Unrecognized file stat status '${status}`));
+                this.logger.error(`Unrecognized file stat status '${status}`);
                 return;
             }
         }
